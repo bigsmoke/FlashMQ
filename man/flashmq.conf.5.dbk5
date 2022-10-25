@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<refentry xml:id="flashmq.conf" xmlns="http://docbook.org/ns/docbook" version="5.0">
+  <refmeta>
+    <refentrytitle>flashmq.conf</refentrytitle>
+    <manvolnum>5</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>flashmq.conf</refname>
+    <refpurpose>FlashMQ configuration file format</refpurpose>
+    <refclass>UNIX/Linux</refclass>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <para>
+      The flashmq.conf file is the configuration used for configuring the FlashMQ MQTT broker. It doesn't necessarily have to be called flashmq.conf; the <command>FlashMQ</command> daemon program sports a <literal>--config-file</literal> parameter.
+    </para>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>File format</title>
+    <para>
+      To set a parameter, its name must appear on a single line, followed by whitespace, followed by the parameter value.
+    </para>
+    <synopsis linenumbering="unnumbered" xml:space="preserve">
+      parameter-name parameter-value
+    </synopsis>
+    <para>
+      Lines beginning with the hash character (“<literal>#</literal>”) and empty lines are ignored. Thus, a line can be commented out by prepending a “<literal>#</literal>” to it.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Parameters</title>
+    <variablelist>
+      <varlistentry>
+        <term><literal>log_file</literal></term>
+        <listitem>
+          <para>
+            This configuration parameter sets the path to FlashMQ's log file.
+          </para>
+          <para>
+            Default value: <literal>/var/log/flashmq/flashmq.log</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><literal>storage_dir</literal></term>
+        <listitem>
+          <para>
+            This configuration parameter determines where FlashMQ stores its persistence data.
+          </para>
+          <para>
+            Default value: <literal>/var/lib/flashmq</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Author</title>
+    <para>
+        Wiebe Cazemier <email>wiebe@halfgaar.net</email>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+
+    <para>
+      <simplelist type="inline">
+        <member>
+          <citerefentry>
+            <refentrytitle>FlashMQ</refentrytitle>
+            <manvolnum>1</manvolnum>
+          </citerefentry>
+        </member>
+      </simplelist>
+    </para>
+  </refsect1>
+</refentry>
+<!-- vim: set expandtab ft=xml shiftwidth=2 tabstop=2: -->

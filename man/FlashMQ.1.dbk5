@@ -1,0 +1,41 @@
+<refentry xml:id="FlashMQ">
+  <refmeta>
+    <refentrytitle>FlashMQ</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>FlashMQ</refname>
+    <refpurpose>FlashMQ daemon program</refpurpose>
+    <refclass>UNIX/Linux</refclass>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <para>
+      Lorem ipsum.
+    </para>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Author</title>
+    <para>
+        Wiebe Cazemier <email>wiebe@halfgaar.net</email>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+
+    <para>
+      <simplelist type="inline">
+        <member>
+          <citerefentry>
+            <refentrytitle>flashmq.conf</refentrytitle>
+            <manvolnum>5</manvolnum>
+          </citerefentry>
+        </member>
+      </simplelist>
+    </para>
+  </refsect1>
+</refentry>
+<!-- vim: set expandtab shiftwidth=2 tabstop=2: -->
