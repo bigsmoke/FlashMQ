@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<refentry xml:id="flashmq.conf" xmlns="http://docbook.org/ns/docbook" version="5.0">
+<refentry
+    xml:id="flashmq.conf"
+    xml:lang="en"
+    xmlns="http://docbook.org/ns/docbook"
+    version="5.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
   <refmeta>
     <refentrytitle>flashmq.conf</refentrytitle>
     <manvolnum>5</manvolnum>
@@ -11,13 +17,13 @@
     <refclass>UNIX/Linux</refclass>
   </refnamediv>
 
-  <refsynopsisdiv>
+  <refsynopsisdiv xml:id="synopsis">
     <para>
-      The flashmq.conf file is the configuration used for configuring the FlashMQ MQTT broker. It doesn't necessarily have to be called flashmq.conf; the <command>FlashMQ</command> daemon program sports a <literal>--config-file</literal> parameter.
+      The <filename>flashmq.conf</filename> file is the configuration used for configuring the FlashMQ MQTT broker. It doesn't necessarily have to be called <filename>flashmq.conf</filename>; the <command>FlashMQ</command> daemon program sports a <literal>--config-file</literal> parameter.
     </para>
   </refsynopsisdiv>
 
-  <refsect1>
+  <refsection xml:id="file-format">
     <title>File format</title>
     <para>
       To set a parameter, its name must appear on a single line, followed by whitespace, followed by the parameter value.
@@ -28,44 +34,340 @@
     <para>
       Lines beginning with the hash character (“<literal>#</literal>”) and empty lines are ignored. Thus, a line can be commented out by prepending a “<literal>#</literal>” to it.
     </para>
-  </refsect1>
+    <para>
+      <!-- TODO: Explain listen {} blocks -->
+    </para>
+  </refsection>
 
-  <refsect1>
-    <title>Parameters</title>
+  <refsection xml:id="global-parameters">
+    <title>Global parameters</title>
     <variablelist>
-      <varlistentry>
-        <term><literal>log_file</literal></term>
+      <varlistentry xml:id="plugin">
+        <term><property>plugin</property> <userinput role="example-property-value">/path/to/plugin.so</userinput></term>
+        <listitem>
+          <para>
+            FlashMQ supports an ELF shared object (<filename>.so</filename> file) plugin interface to add functionality, authorization and authentication, because it’s hard to provide a declarative mechanism that works for everybody. See <filename>flashmq_plugin.h</filename> for the API and its documentation. It’s written in C++ for ease of passing FlashMQ internals without conversion to C, but you can basically just use a C++ compiler and program like it was C; the C++ constructs are simple.
+          </para>
+          <para>
+            FlashMQ will auto-detect which plugin interface you’re trying to load (Mosquitto version 2 or FlashMQ native). Keep in mind that each thread initializes the plugin, inline with multi-core programming (minimize shared data and interaction between threads). You could use static variables with thread synchronization if you really want to. And of course, any Mosquitto plugin that uses global and/or static variables instead of initializing memory in its <function>init()</function> method, will not be thread-safe and won’t work.
+          </para>
+          <para>
+            <!-- TODO: link to these other config vars -->
+            You can only have one plugin active, but you can combine it with <link xlink:href="#mosquitto_passwd_file"><property>mosquitto_passwd_file</property></link> and <link xlink:href="mosquitto_acl_file"><literal>mosquitto_acl_file</literal></link>. The password and ACL file take precedence, and on a ‘deny’, will not ask the plugin.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="plugin_serialize_init">
+        <term><property>plugin_serialize_init</property></term>
+        <listitem>
+          <para>
+            Default value: <literal>true</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="plugin_serialize_auth_checks">
+        <term><property>plugin_serialize_auth_checks</property></term>
+        <listitem>
+          <para>
+            Default value: <literal>false</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="plugin_timer_period">
+        <term><property>plugin_timer_period</property></term>
+        <listitem>
+          <para>
+            The FlashMQ auth plugin interface has a function that is called periodically this amount of seconds.
+          </para>
+          <para>
+            Default value: <literal>60</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="log_file">
+        <term><property>log_file</property></term>
         <listitem>
           <para>
             This configuration parameter sets the path to FlashMQ's log file.
           </para>
           <para>
-            Default value: <literal>/var/log/flashmq/flashmq.log</literal>
+            Default value: <filename>/var/log/flashmq/flashmq.log</filename>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="log_debug">
+        <term><property>log_debug</property></term>
+        <listitem>
+          <para>
+            <!-- TODO -->
+          </para>
+          <para>
+            Default value: <literal>true</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="log_subscriptions">
+        <term><property>log_subscriptions</property></term>
+        <listitem>
+          <para>
+            <!-- TODO -->
+          </para>
+          <para>
+            Default value: <literal>true</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="allow_unsafe_clientid_chars">
+        <term><property>allow_unsafe_clientid_chars</property></term>
+        <listitem>
+          <para>
+            <!-- TODO -->
+          </para>
+          <para>
+            Default value: <literal>false</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="allow_unsafe_username_chars">
+        <term><property>allow_unsafe_username_chars</property></term>
+        <listitem>
+          <para>
+            <!-- TODO -->
+          </para>
+          <para>
+            Default value: <literal>false</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="max_packet_size">
+        <term><property>max_packet_size</property></term>
+        <listitem>
+          <para>
+            MQTT packets are 256 MB max, approximately. This memory will (temporarily) be allocated upon arrival of such packets, so there may be cause to set it lower.
+          </para>
+          <para>
+            Default value: <literal>268435461</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="mosquitto_passwd_file">
+        <term><property>mosquitto_passwd_file</property> <userinput><filename>/foo/bar/mosquitto_passwd_file</filename></userinput></term>
+        <listitem>
+          <para>
+            File with usernames and hashed passwords compatible with Mosquitto.
+            You can use Mosquitto's mosquitto_passwd to manage the file.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="mosquitto_acl_file">
+        <term><property>mosquitto_acl_file</property> <userinput><filename>/foo/bar/mosquitto_acl_file</filename></userinput></term>
+        <listitem>
+          <para>
+            ACL (access control lists) for users, anonymous users and patterns expandable with %u (username) and %c (clientid). Format is Mosquitto's acl_file.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="allow_anonymous">
+        <term><property>allow_anonymous</property></term>
+        <listitem>
+          <para>
+            Default value: <literal>true</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="rlimit_nofile">
+        <term><property>rlimit_nofile</property></term>
+        <listitem>
+          <para>
+            The general Linux default of <literal>1024</literal> can be overridden. Note: <systemitem class="daemon">systemd</systemitem> blocks you from setting it, so it needs to be set on the unit.
+          </para>
+          <para>
+            Default value: <literal>1000000</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="expire_sessions_after_seconds">
+        <term><property>expire_sessions_after_seconds</property></term>
+        <listitem>
+          <para>
+            Expire sessions after this time. Setting to 0 disables it, and is (MQTT3) standard-compliant. But, existing sessions cause load on the server (because they are still subscribers), so keeping sessions after any client that connects with a random ID doesn't make sense.
+          </para>
+          <para>
+            Default value: <literal>1209600</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="quiet">
+        <term><property>quiet</property></term>
+        <listitem>
+          <para>
+            <!-- TODO -->
+          </para>
+          <para>
+            Default value: <literal>false</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="storage_dir">
+        <term><property>storage_dir</property></term>
+        <listitem>
+          <para>
+            Location to store sessions, subscriptions and retained messages.
+            Not specifying this will turn off persistence.
+          </para>
+          <para>
+            Default value: <filename>/var/lib/flashmq</filename>
           </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><literal>storage_dir</literal></term>
+        <term xml:id="max_qos_msg_pending_per_client"><property>max_qos_msg_pending_per_client</property></term>
+        <term xml:id="max_qos_bytes_pending_per_client"><property>max_qos_bytes_pending_per_client</property></term>
         <listitem>
           <para>
-            This configuration parameter determines where FlashMQ stores its persistence data.
+            These are essentially superfluous for MQTT >= 3.1.1 clients with <literal>cleansession=true</literal>. Packets don't need to be stored for those.
           </para>
           <para>
-            Default value: <literal>/var/lib/flashmq</literal>
+            Defaults:
+          </para>
+          <literallayout class="monospaced">max_qos_msg_pending_per_client 65535
+max_qos_bytes_pending_per_client 65536</literallayout>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="max_incoming_topic_alias_value">
+        <term><property>max_incoming_topic_alias_value</property></term>
+        <listitem>
+          <para>
+            Is communicated towards MQTT5 clients.
+          </para>
+          <para>
+            Default value: <literal>65535</literal>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="max_outgoing_topic_alias_value">
+        <term><property>max_outgoing_topic_alias_value</property></term>
+        <listitem>
+          <para>
+            FlashMQ will make this many aliases per MQTT5 client, if they ask for aliases.
+          </para>
+          <para>
+            Default value: <literal>65535</literal>
           </para>
         </listitem>
       </varlistentry>
     </variablelist>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
+  <refsection>
+    <title>Listen parameters</title>
+    <para>
+       Listen parameters can only be used within <literal>listen { }</literal> blocks.
+    </para>
+    <variablelist>
+      <varlistentry xml:id="port">
+        <term><property>port</property></term>
+        <listitem>
+          <para>
+            The default port depends on the <property>protocol</property> parameter and whether or not <property>fullchain</property> and <property>privkey</property> parameters are supplied:
+          </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+                  For unencrypted MQTT, the default port is <literal>1883</literal>
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                  For encrypted MQTT, the default port is <literal>8883</literal>
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                  For plain HTTP websockets, the default port is <literal>8080</literal>
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                  For encrypted HTTS websockets, the default port is <literal>4443</literal>
+              </para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="protocol">
+        <term><property>protocol</property></term>
+        <listitem>
+          <para>
+            Valid values:
+            <simplelist type="horiz">
+              <member>
+                <literal>mqtt</literal>
+                <literal>websockets</literal>
+              </member>
+            </simplelist>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="inet_protocol">
+        <term><property>inet_protocol</property></term>
+        <listitem>
+          <para>
+            Valid values:
+            <simplelist type="horiz">
+              <member>
+                <literal>ip4_ip6</literal>
+              </member>
+              <member>
+                <literal>ip4</literal>
+              </member>
+              <member>
+                <literal>ip6</literal>
+              </member>
+            </simplelist>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="inet4_bind_address">
+        <term><property>inet4_bind_address</property> <userinput><systemitem class="ipaddress">127.0.0.1</systemitem></userinput></term>
+        <listitem>
+          <para>
+            Example:
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="inet6_bind_address">
+        <term><property>inet6_bind_address</property> <userinput><systemitem class="ipaddress">::1</systemitem></userinput></term>
+        <listitem>
+          <para>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="fullchain">
+        <term><property>fullchain</property> <userinput><filename>/foobar/server.crt</filename></userinput></term>
+        <listitem>
+          <para>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry xml:id="privkey">
+        <term><property>privkey</property> <userinput><filename>/foobar/server.key</filename></userinput></term>
+        <listitem>
+          <para>
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsection>
+
+  <refsection>
     <title>Author</title>
     <para>
-        Wiebe Cazemier <email>wiebe@halfgaar.net</email>.
+        Wiebe Cazemier &lt;<email>wiebe@halfgaar.net</email>&gt;.
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
+  <refsection>
     <title>See also</title>
 
     <para>
@@ -78,6 +380,6 @@
         </member>
       </simplelist>
     </para>
-  </refsect1>
+  </refsection>
 </refentry>
 <!-- vim: set expandtab ft=xml shiftwidth=2 tabstop=2: -->

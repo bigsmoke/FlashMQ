@@ -1,4 +1,4 @@
-all: FlashMQ.1 flashmq.conf.5
+all: FlashMQ.1 flashmq.conf.5 FlashMQ.1.html flashmq.conf.5.html
 
 # Why `docbook2x-man` from the `docbook2x` Debian package, and _not_
 # `docbook-to-man` from the `docbook-to-man` Debian package?  Because
@@ -20,3 +20,6 @@ all: FlashMQ.1 flashmq.conf.5
 #.PRECIOUS: %.dbk4  # Uncomment to keep intermediate `*.dbk4` files for debugging.
 %.dbk4: %.dbk5
 	xsltproc db5to4/db5to4-withinfo.xsl $< > $@
+
+%.html: docbook5-to-html5/docbook5-to-html5.xsl %.dbk5
+	xsltproc $^ > $@

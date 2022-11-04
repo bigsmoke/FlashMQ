@@ -1,4 +1,11 @@
-<refentry xml:id="FlashMQ">
+<?xml version="1.0" encoding="utf-8"?>
+<refentry
+    xml:id="FlashMQ"
+    xml:lang="en"
+    xmlns="http://docbook.org/ns/docbook"
+    version="5.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
   <refmeta>
     <refentrytitle>FlashMQ</refentrytitle>
     <manvolnum>1</manvolnum>
